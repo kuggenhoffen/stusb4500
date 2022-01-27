@@ -1,16 +1,7 @@
 #!/usr/bin/env python2.7
 from time import sleep
 from collections import namedtuple
-try:
-	from smbus import SMBus
-except ImportError:
-	print("SMBus module not installed")
-
-try:
-	import RPi.GPIO as gpio
-except ImportError:
-	print("RPi module not installed")
-
+from smbus2 import SMBus
 import argparse
 
 #addr = 0x28 # I2C Address of the chip
@@ -28,7 +19,7 @@ import argparse
 
 class STUSB4500(object):
 	def __init__(self, bus, addr):
-		self.bus = SMBus(bus)
+		self.bus = bus
 		self.addr = addr
 
 	#	\brief Reads typec revision and usbpd revision of the chip
@@ -370,8 +361,10 @@ def hex_int(param):
 	return int(param, 0)
 
 def command_nvm(args):
+	bus = SMBus(args.bus)
+	inst = STUSB4500(bus)
 	if args.dump:
-		nvm_dump()
+		inst.nvm_dump()
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description="Tool for configuring STUSB4500")
